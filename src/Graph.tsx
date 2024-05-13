@@ -5,6 +5,7 @@ import './Graph.css';
 
 /**
  * Props declaration for <Graph />
+ * showGraph not passes since not used once graph component is visible
  */
 interface IProps {
   data: ServerRespond[],
@@ -14,20 +15,11 @@ interface IProps {
  * Perspective library adds load to HTMLElement prototype.
  * This interface acts as a wrapper for Typescript compiler.
  */
-interface PerspectiveViewerElement {
+interface PerspectiveViewerElement extends HTMLElement {
   load: (table: Table) => void,
-  restore: (layout: PerspectiveViewerConfig ) => void,
-  toggleConfig: () => void
-}
-
-interface PerspectiveViewerConfig {
-  viewConfig: ViewConfig,
-  plugin: string, 
-  pluginConfig?: any,
-  settings: boolean,
-
 
 }
+
 
 /**
  * React component that renders Perspective based on data
@@ -57,12 +49,19 @@ class Graph extends Component<IProps, {}> {
     }
     if (this.table) {
       // Load the `table` in the `<perspective-viewer>` DOM reference.
-      const viewConfig: ViewConfig = {"columns": ["top_ask_price"], group_by: ["timestamp"], split_by: ["stock"]}
-      const layout: PerspectiveViewerConfig ={ plugin: "Y Line", settings: false, viewConfig: viewConfig}
       // Add more Perspective configurations here.
+      //I'll be honest, didnt know how to add Perspective configs. This way is much better 
       elem.load(this.table);
-      elem.restore(layout);
-      elem.toggleConfig();
+      elem.setAttribute('view', 'y_line');
+      elem.setAttribute('column-pivots', "['stock']");
+      elem.setAttribute('row-pivots', '["timestamp"]');
+      elem.setAttribute('columns', '["top_ask_price"]');
+      elem.setAttribute('aggregates', `
+      {"stock": "distinct count",
+      "top_ask_price": "avg",
+      "top_bid_price": "avg",
+      "timestamp": "distinct count"}`);
+
    
     }
   }
