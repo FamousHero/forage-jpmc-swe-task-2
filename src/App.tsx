@@ -36,11 +36,18 @@ class App extends Component<{}, IState> {
    * Get new data from server and update the state with the new data
    */
   getDataFromServer() {
-    DataStreamer.getData((serverResponds: ServerRespond[]) => {
-      // Update the state by creating a new array of data that consists of
-      // Previous data in the state and the new data from server
-      this.setState({ data: [...this.state.data, ...serverResponds] });
-    });
+    let x = 0;
+    const interval = setInterval(()=>{
+      DataStreamer.getData((serverResponds: ServerRespond[]) => {
+        // Update the state by creating a new array of data that consists of
+        // Previous data in the state and the new data from server
+        this.setState({ data: [...this.state.data, ...serverResponds] });
+      });
+      x++;
+      if(x > 1832)
+        clearInterval(interval);
+    }, 100);
+
   }
 
   /**
@@ -59,7 +66,7 @@ class App extends Component<{}, IState> {
             // As part of your task, update the getDataFromServer() function
             // to keep requesting the data every 100ms until the app is closed
             // or the server does not return anymore data.
-            onClick={() => {setInterval(()=>{this.getDataFromServer()}, 100)}}>
+            onClick={() => {this.getDataFromServer()}}>
             Start Streaming Data
           </button>
           <div className="Graph">
