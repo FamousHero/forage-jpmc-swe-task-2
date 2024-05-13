@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from '@finos/perspective';
+import { Table, ViewConfig,  } from '@finos/perspective';
 import { ServerRespond } from './DataStreamer';
 import './Graph.css';
 
@@ -16,6 +16,17 @@ interface IProps {
  */
 interface PerspectiveViewerElement {
   load: (table: Table) => void,
+  restore: (layout: PerspectiveViewerConfig ) => void,
+  toggleConfig: () => void
+}
+
+interface PerspectiveViewerConfig {
+  viewConfig: ViewConfig,
+  plugin: string, 
+  pluginConfig?: any,
+  settings: boolean,
+
+
 }
 
 /**
@@ -46,9 +57,13 @@ class Graph extends Component<IProps, {}> {
     }
     if (this.table) {
       // Load the `table` in the `<perspective-viewer>` DOM reference.
-
+      const viewConfig: ViewConfig = {"columns": ["top_ask_price"], group_by: ["timestamp"], split_by: ["stock"]}
+      const layout: PerspectiveViewerConfig ={ plugin: "Y Line", settings: false, viewConfig: viewConfig}
       // Add more Perspective configurations here.
       elem.load(this.table);
+      elem.restore(layout);
+      elem.toggleConfig();
+   
     }
   }
 
